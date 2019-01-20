@@ -1,3 +1,13 @@
+**/.DS_Store
+**/.idea
+**/*.iml
+**/target
+**/logs
+**/test-data
+**/unit-test-data-gen*
+**/generatedTestDataFolder*
+**/secrets.properties
+
 ######################
 # Project Specific
 ######################
