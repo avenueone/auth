@@ -1,0 +1,91 @@
+spring:
+  application:
+    name: Avo Auth and Orch layer
+  profiles:
+    active: "local"
+server:
+  port: 8950
+  servlet:
+    context-path: /auth-svc/api
+  servlet-path: /auth-svc/api
+application:
+  security:
+    enableCookieAuth: ${ENABLE_USER_AUTHENTICATION}
+    encryption:
+      salt: Test
+      key: Testing
+    session:
+      context: ${server.servlet.context-path}
+      timeout: 600
+      cookie:
+        token: A1_BLVD
+        user: A1_USR
+    whitelist:
+    - /auth
+    - /ping
+
+---
+
+spring:
+  profiles: local
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_URL}
+    username: auth
+    password: auth1
+    jpa:
+      database: POSTGRESQL
+      database-platform: org.hibernate.dialect.PostgreSQL82Dialect
+      show-sql: true
+      properties:
+        hibernate.hbm2ddl.auto: none
+        hibernate.implicit_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        hibernate.physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+
+eureka:
+  client:
+  registerWithEureka: false
+  fetchRegistry: false
+
+zuul:
+  ignoredPatterns: /**/auth/**
+  routes:
+    planning-svc:
+      path: /planning/**
+      url: http://${PLANNING_SVC_URL}/api
+    target-svc:
+      path: /target/**
+      url: http://${TARGET_SVC_URL}/api
+
+---
+
+spring:
+  profiles: dev
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_URL}
+    username: auth
+    password: auth1
+    jpa:
+      database: POSTGRESQL
+      database-platform: org.hibernate.dialect.PostgreSQL82Dialect
+      show-sql: true
+      properties:
+        hibernate.hbm2ddl.auto: none
+        hibernate.implicit_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        hibernate.physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+
+---
+
+spring:
+  profiles: prod
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_URL}
+    username: auth
+    password: auth1
+    jpa:
+      database: POSTGRESQL
+      database-platform: org.hibernate.dialect.PostgreSQL82Dialect
+      show-sql: true
+      properties:
+        hibernate.hbm2ddl.auto: none
+        hibernate.implicit_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+        hibernate.physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>auth</artifactId>
+        <groupId>com.avenueone.security</groupId>
+        <version>01.00.00-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>auth-svc</artifactId>
+
+    <properties>
+
+        <avo.docker.registry>registry.avenueone.com</avo.docker.registry>
+        <avo.docker.namespace>avo</avo.docker.namespace>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.avenueone.security</groupId>
+            <artifactId>identity-manager</artifactId>
+            <version>${version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.avenueone.security</groupId>
+            <artifactId>session-manager</artifactId>
+            <version>${version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.avenueone.security</groupId>
+            <artifactId>service-client</artifactId>
+            <version>${version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
+
+        <!--http://mvnrepository.com/artifact/org.springframework/spring-tx-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+
+    </dependencies>
+    <profiles>
+        <!-- docker profile -->
+        <profile>
+            <id>docker</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.4.13</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.sonatype.plexus</groupId>
+                                <artifactId>plexus-cipher</artifactId>
+                                <version>1.4</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>docker-build</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>docker-tag</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>tag</goal>
+                                </goals>
+                                <configuration>
+                                    <image>
+                                        ${avo.docker.registry}/${avo.docker.namespace}/${project.artifactId}:${project.version}
+                                    </image>
+                                    <newName>
+                                        ${avo.docker.registry}/${avo.docker.namespace}/${project.artifactId}:${project.version}
+                                    </newName>
+                                    <forceTags>true</forceTags>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <imageName>
+                                ${avo.docker.registry}/${avo.docker.namespace}/${project.artifactId}:${project.version}
+                            </imageName>
+                            <dockerDirectory>${project.basedir}/../docker</dockerDirectory>
+                            <resources>
+                                <resource>
+                                    <targetPath>/image</targetPath>
+                                    <directory>${project.build.directory}</directory>
+                                    <include>${project.build.finalName}.${project.packaging}</include>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
